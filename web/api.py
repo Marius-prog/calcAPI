@@ -1,45 +1,26 @@
-from flask import Flask, request, jsonify
-from flask_restful import Api, Resource
-import bcrypt
-from flask_sqlalchemy import SQLAlchemy
+# from flask import Flask, request, jsonify
+# from flask_restful import Api, Resource
+# from pymongo import MongoClient
+#
+# app = Flask(__name__)
+# api = Api(app)
+#
+# client = MongoClient("mongodb://db:27017")
+# db = client.aNewDB
+# UserNum = db["UserNum"]
+
+UserNum.insert({
+    'num_of_users': 0
+
+})
 
 
-app = Flask(__name__)
-api = Api(app)
-
-
-
-
-class Register(Resource):
-    def post(self):
-    # get the data from user
-    postedData = request.get_json()
-    username = postedData["username"]
-    password = postedData["password"]
-
-
-
-#     hash password
-    hashed_pw = bcrypt.hashpw(password, bcrypt.gensalt())
-
-    users.insert({
-        "Username": username,
-        "Password": hashed_pw,
-        "Sentence": ""
-
-    })
-
-
-    retJson = {
-        "status": 200,
-        "Message": "You successfully signed up for the calc-API !!"
-
-    }
-
-class Store(Resource):
-    def post(self):
-        postedData = request.get_json()
-        
+class Visit(Resource):
+    def get(self):
+        prev_num = UserNum.find({})[0]["num_of_users"]
+        new_num = prev_num + 1
+        UserNum.update({}, {"$set": {"num_of_users": new_num}})
+        return str("Hello user " + str(new_num))
 
 
 def checkPostedData(postedData, functionName):
@@ -161,7 +142,7 @@ api.add_resource(Add, '/api/add')
 api.add_resource(Sub, '/api/sub')
 api.add_resource(Multi, '/api/multiply')
 api.add_resource(Divide, '/api/divide')
-api.add_resource(Register, '/register')
+api.add_resource(Visit, '/api/hello')
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0")
